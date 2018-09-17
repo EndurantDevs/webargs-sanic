@@ -1,0 +1,14 @@
+aiofiles==0.4.0
+httptools==0.0.11
+marshmallow==2.15.5
+multidict==4.4.0
+phonenumbers==8.9.13
+python-dotenv==0.9.1
+PyYAML==3.13
+sanic==0.8.3
+ujson==1.35
+uvloop==0.11.2
+validate-email==1.3
+webargs==4.0.0
+webargs-sanic==0.0.9
+websockets==5.0.1
