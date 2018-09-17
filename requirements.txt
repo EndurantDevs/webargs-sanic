@@ -6,6 +6,7 @@ pytest
 pytest-cov
 webtest-sanic
 mock
+aiohttp
 
 # Packaging
 wheel
