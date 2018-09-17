@@ -6,7 +6,7 @@ Example: ::
     from sanic import Sanic
 
     from webargs import fields
-    from webargs.sanicparser import use_args
+    from webargs_sanic.sanicparser import use_args
 
     app = Sanic(__name__)
 
@@ -27,7 +27,10 @@ from webargs.asyncparser import AsyncParser
 
 @sanic.exceptions.add_status_code(422)
 class HandleValidationError(sanic.exceptions.SanicException):
-    pass
+    def __init__(self, message, status_code):
+        super().__init__(message)
+        self.headers = dict()
+        self.headers["Content-type"] = "application/json"
 
 
 def abort(http_status_code, exc=None, **kwargs):
