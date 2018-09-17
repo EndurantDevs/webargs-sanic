@@ -1,0 +1,15 @@
+sanic
+webargs
+
+# Testing
+pytest
+pytest-cov
+webtest-sanic
+mock
+
+# Packaging
+wheel
+twine
+
+#Coverage
+codecov
