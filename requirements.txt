@@ -1,16 +1,15 @@
-sanic
-webargs
+sanic>=0.8.0
+webargs>=4.0.0
 
 # Testing
-pytest
-pytest-cov
-webtest-sanic
-mock
-aiohttp
+pytest>==3.8.0
+pytest-cov>=2.6.0
+webtest-sanic>=0.1.6
+mock>=2.0.0s
+pytest-aiohttp>=0.3.0
 
 # Packaging
-wheel
-twine
+twine>=1.11.0
 
 #Coverage
-codecov
+codecov>=2.0.15
