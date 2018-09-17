@@ -3,7 +3,8 @@ import re
 from setuptools import setup
 
 REQUIRES = [
-    'sanic'
+    'sanic',
+    'webargs'
 ]
 
 def find_version(fname):
