@@ -10,7 +10,7 @@ from webargs_sanic.sanicparser import parser, abort
 from webargs.core import MARSHMALLOW_VERSION_INFO
 
 from .apps.sanic_app import app
-from .common import CommonTestCase
+from webargs.testing import CommonTestCase
 from webtest_sanic import TestApp
 import asyncio
 import pytest
