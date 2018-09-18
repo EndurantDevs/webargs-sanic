@@ -1,5 +1,5 @@
 # webargs-sanic
-[Sanic](https://github.com/huge-success/sanic) integration with [Webargs](https://github.com/sloria/webargs)
+[Sanic](https://github.com/huge-success/sanic) integration with [Webargs](https://github.com/sloria/webargs). Parsing and validating request arguments: headers, arguments, cookies, files, json, etc.
 
 [![Build Status](https://img.shields.io/travis/EndurantDevs/webargs-sanic.svg?logo=travis)](https://travis-ci.org/EndurantDevs/webargs-sanic) [![Latest Version](https://img.shields.io/pypi/v/webargs-sanic.svg)](https://pypi.python.org/pypi/webargs-sanic/) [![Python Versions](https://img.shields.io/pypi/pyversions/webargs-sanic.svg)](https://github.com/EndurantDevs/webargs-sanic/blob/master/setup.py) [![Tests Coverage](https://img.shields.io/codecov/c/github/EndurantDevs/webargs-sanic/master.svg)](https://codecov.io/gh/EndurantDevs/webargs-sanic)
 
@@ -71,7 +71,7 @@ from webargs_sanic.sanicparser import parser, HandleValidationError
 
 app = Sanic(__name__)
 
-@app.route("/echo_use_args_validated", methods=["GET", "POST"])
+@app.route("/echo_view_args_validated/<value>", methods=["GET"])
 async def echo_use_args_validated(request, args):
     parsed = await parser.parse(
         {"value": fields.Int(required=True, validate=lambda args: args["value"] > 42)}, request, locations=("view_args",)
