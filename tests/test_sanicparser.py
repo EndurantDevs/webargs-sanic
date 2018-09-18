@@ -21,7 +21,8 @@ class TestSanicParser(CommonTestCase):
     def create_app(self):
         return app
 
-    # testing of file uplaods is made through sanic.test_client
+    # testing of file uploads is made through sanic.test_client
+    # please check test_parse_files function below
     @pytest.mark.skip(reason="files location not supported for aiohttpparser")
     def test_parse_files(self, testapp):
         pass
@@ -51,6 +52,10 @@ class TestSanicParser(CommonTestCase):
     def test_use_args_on_a_method_view(self, testapp):
         res = testapp.post("/echo_method_view_use_args", {"val": 42})
         assert res.json == {"val": 42}
+
+    def test_use_args_on_a_LOLgather_view(self, testapp):
+        res = testapp.post("/echo_lol")
+        assert res.json == {'name': 'World'}
 
     def test_use_kwargs_on_a_method_view(self, testapp):
         res = testapp.post("/echo_method_view_use_kwargs", {"val": 42})

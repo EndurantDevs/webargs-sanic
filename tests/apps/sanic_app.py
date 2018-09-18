@@ -6,6 +6,7 @@ import marshmallow as ma
 from webargs import fields, ValidationError, missing
 from webargs_sanic.sanicparser import parser, use_args, use_kwargs, HandleValidationError
 from webargs.core import MARSHMALLOW_VERSION_INFO
+import asyncio
 
 
 class TestAppConfig:
@@ -25,6 +26,16 @@ hello_many_schema = HelloSchema(many=True, **strict_kwargs)
 
 app = Sanic(__name__)
 app.config.from_object(TestAppConfig)
+
+
+@app.route("/echo_lol", methods=["GET", "POST"])
+async def echo_lol(request):
+    #just FORFUN test
+    parsed1 = parser.parse(hello_args, request, locations=("headers",))
+    parsed2 = parser.parse(hello_args, request, locations=("headers",))
+    parsed3 = parser.parse(hello_args, request, locations=("headers",))
+    (res1, res2, res3) = await asyncio.gather(parsed1, parsed2, parsed3)
+    return J(res2)
 
 
 @app.route("/echo", methods=["GET", "POST"])
@@ -106,8 +117,9 @@ async def error400(request):
 
 @app.route("/echo_headers")
 async def echo_headers(request):
-    parsed = await parser.parse(hello_args, request, locations=("headers",))
-    return J(parsed)
+    parsed1 = parser.parse(hello_args, request, locations=("headers",))
+    res1 = await parsed1
+    return J(res1)
 
 
 @app.route("/echo_cookie")

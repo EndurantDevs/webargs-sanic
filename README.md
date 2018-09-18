@@ -25,6 +25,8 @@ hello_args = {
 @use_args(hello_args)
 async def index(args):
     return 'Hello ' + args['name']
+
+
 ```
 
 ### Installing
