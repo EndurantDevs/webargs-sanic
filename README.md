@@ -85,6 +85,64 @@ async def handle_validation_error(request, err):
     return json({"errors": err.exc.messages}, status=422)
 ```
 
+### More complicated custom example ###
+```python
+from sanic import Sanic
+from sanic import response
+from sanic import Blueprint
+
+from webargs_sanic.sanicparser import use_kwargs
+
+from some_CUSTOM_storage import InMemory
+
+from webargs import fields
+from webargs import validate
+
+import marshmallow.fields
+from validate_email import validate_email
+
+#usually this should not be here, better to import ;)
+#please check examples for more info
+class Email(marshmallow.fields.Field):
+
+    def __init__(self, *args, **kwargs):
+        super(Email, self).__init__(*args, **kwargs)
+
+    def _deserialize(self, value, attr, obj):
+        value = value.strip().lower()
+        if not validate_email(value):
+            self.fail('validator_failed')
+        return value
+
+user_update = {
+    'user_data': fields.Nested({
+        'email': Email(),
+        'password': fields.Str(validate=lambda value: len(value)>=8),
+        'first_name': fields.Str(validate=lambda value: len(value)>=1),
+        'last_name': fields.Str(validate=lambda value: len(value)>=1),
+        'middle_name': fields.Str(),
+        'gender': fields.Str(validate=validate.OneOf(["M", "F"])),
+        'birth_date': fields.Date(),
+    }),
+    'user_id': fields.Str(required=True, validate=lambda x:len(x)==32),
+}
+
+
+blueprint = Blueprint('app')
+storage = InMemory()
+
+
+@blueprint.put('/user/')
+@use_kwargs(user_update)
+async def update_user(request, user_id, user_data):
+    storage.update_or_404(user_id, user_data)
+    return response.text('', status=204)
+
+app = Sanic(__name__)
+app.blueprint(blueprint, url_prefix='/')
+
+```
+
 For more examples and checking how to use custom validations (phones, emails, etc.) please check apps in [Examples](https://github.com/EndurantDevs/webargs-sanic/tree/master/examples/)
 
 ## Installing ##
