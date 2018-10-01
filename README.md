@@ -182,7 +182,7 @@ pytest tests/
 
 
 ## Authors
-[<img src="https://github.com/EndurantDevs/botstat-seo/raw/master/docs/img/EndurantDevs-big.png" alt="Endurant Devs Team" width="150">](https://github.com/EndurantDevs)
+[<img src="https://github.com/EndurantDevs/botstat-seo/raw/master/docs/img/EndurantDevs-big.png" alt="Endurant Developers Python Team" width="150">](https://www.endurantdevs.com/)
 
 ## License
 
