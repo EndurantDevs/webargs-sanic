@@ -4,11 +4,11 @@ marshmallow==2.15.5
 multidict==4.4.0
 phonenumbers==8.9.13
 python-dotenv==0.9.1
-PyYAML==3.13
-sanic==0.8.3
+pyyaml>=4.2b1
+sanic==18.12.0
 ujson==1.35
 uvloop==0.11.2
 validate-email==1.3
-webargs==4.0.0
+webargs>=5.1.3
 webargs-sanic==0.1.0
 websockets==5.0.1
