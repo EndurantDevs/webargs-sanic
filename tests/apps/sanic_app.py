@@ -3,7 +3,7 @@ from sanic.response import json as J
 from sanic.views import HTTPMethodView
 
 import marshmallow as ma
-from webargs import fields, ValidationError, missing
+from webargs import fields, ValidationError
 from webargs_sanic.sanicparser import parser, use_args, use_kwargs, HandleValidationError
 from webargs.core import MARSHMALLOW_VERSION_INFO
 import asyncio
@@ -196,14 +196,15 @@ app.add_route(EchoMethodViewUseKwargs.as_view(), "/echo_method_view_use_kwargs")
 
 
 @app.route("/echo_use_kwargs_missing", methods=["POST"])
-@use_kwargs({"username": fields.Str(), "password": fields.Str()})
-async def echo_use_kwargs_missing(request, username, password):
-    assert password is missing
+@use_kwargs({"username": fields.Str(required=True), "password": fields.Str()})
+async def echo_use_kwargs_missing(request, username, **kwargs):
+    assert "password" not in kwargs
     return J({"username": username})
 
 
 # Return validation errors as JSON
 @app.exception(HandleValidationError)
 async def handle_validation_error(request, err):
-    assert isinstance(err.data["schema"], ma.Schema)
-    return J({"errors": err.exc.messages}, status=422)
+    if err.data["status_code"] == 422:
+        assert isinstance(err.data["schema"], ma.Schema)
+    return J({"errors": err.exc.messages}, status=err.data["status_code"])

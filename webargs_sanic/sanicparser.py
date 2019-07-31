@@ -23,8 +23,9 @@ import sanic
 
 from webargs import core
 from webargs.asyncparser import AsyncParser
+from webargs.core import json as wa_json
 
-
+@sanic.exceptions.add_status_code(400)
 @sanic.exceptions.add_status_code(422)
 class HandleValidationError(sanic.exceptions.SanicException):
     pass
@@ -40,6 +41,9 @@ def abort(http_status_code, exc=None, **kwargs):
         sanic.exceptions.abort(http_status_code, exc)
     except sanic.exceptions.SanicException as err:
         err.data = kwargs
+
+        if exc and not hasattr(exc, 'messages'):
+            exc.messages = kwargs.get('messages')
         err.exc = exc
         raise err
 
@@ -75,9 +79,18 @@ class SanicParser(AsyncParser):
         """Pull a json value from the request."""
         if not (req.body and is_json_request(req)):
             return core.missing
-        json_data = req.json
-        if json_data is None:
-            return core.missing
+
+        try:
+            json_data = req.json
+        except:
+            data = req.body
+            try:
+                self._cache["json"] = json_data = core.parse_json(data)
+            except wa_json.JSONDecodeError as e:
+                if e.doc == "":
+                    return core.missing
+                else:
+                    return self.handle_invalid_json_error(e, req)
         return core.get_value(json_data, name, field, allow_many_nested=True)
 
     def parse_querystring(self, req, name, field):
@@ -109,7 +122,12 @@ class SanicParser(AsyncParser):
         responds with a 422 error.
         """
         status_code = error_status_code or getattr(error, "status_code", self.DEFAULT_VALIDATION_STATUS)
-        abort(status_code, exc=error, messages=error.messages, schema=schema)
+        abort(status_code, exc=error, messages=error.messages, schema=schema, status_code=status_code)
+
+    def handle_invalid_json_error(self, error, req, *args, **kwargs):
+        status_code=400
+        abort(status_code, exc=error, messages={"json": ["Invalid JSON body."]}, status_code=status_code)
+
 
 
 parser = SanicParser()

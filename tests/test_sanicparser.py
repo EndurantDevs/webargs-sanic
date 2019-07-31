@@ -4,6 +4,8 @@ import json
 import mock
 
 from sanic.exceptions import SanicException
+from sanic import __version__ as sanic_version
+from packaging import version
 
 from webargs import fields, ValidationError, missing
 from webargs_sanic.sanicparser import parser, abort
@@ -28,7 +30,7 @@ class TestSanicParser(CommonTestCase):
         pass
 
     def create_testapp(self, app):
-        loop = asyncio.new_event_loop()
+        loop = asyncio.get_event_loop()
         self.loop = loop
         return TestApp(app, loop=self.loop)
 
@@ -62,8 +64,18 @@ class TestSanicParser(CommonTestCase):
         assert res.json == {"val": 42}
 
     def test_use_kwargs_with_missing_data(self, testapp):
-        res = testapp.post("/echo_use_kwargs_missing", {"username": "foo"})
+        res = testapp.post("/echo_use_kwargs_missing", {"username": "foo"}, expect_errors=True)
         assert res.json == {"username": "foo"}
+
+    def test_invalid_json(self, testapp):
+        res = testapp.post(
+            "/echo",
+            '{"foo": "bar", jdhfjdhjsd}',
+            headers={"Accept": "application/json", "Content-Type": "application/json"},
+            expect_errors=True,
+        )
+        assert res.status_code == 400
+        assert res.json == {'errors': {'json': ['Invalid JSON body.']}}
 
     # regression test for https://github.com/sloria/webargs/issues/145
     def test_nested_many_with_data_key(self, testapp):
@@ -87,7 +99,7 @@ def test_abort_called_on_validation_error(mock_abort, loop):
         headers={"content_type": "application/json"},
     )
 
-    mock_abort.assert_called
+    mock_abort.assert_called()
     abort_args, abort_kwargs = mock_abort.call_args
     assert abort_args[0] == 422
     expected_msg = "Invalid value."
@@ -96,9 +108,15 @@ def test_abort_called_on_validation_error(mock_abort, loop):
 
 
 def test_parse_files(loop):
-    res = app.test_client.post(
-        "/echo_file", data={"myfile": io.BytesIO(b"data")}, gather_request=False
-    )
+
+    if (version.parse(sanic_version) < version.parse("19.0.0")):
+        res = app.test_client.post(
+            "/echo_file", data={"myfile": io.BytesIO(b"data")}, gather_request=False
+        )
+    else:
+        res = app.test_client.post(
+            "/echo_file", files=[("myfile", io.BytesIO(b"data"))], gather_request=False
+        )
     assert res.json == {"myfile": "data"}
 
 
