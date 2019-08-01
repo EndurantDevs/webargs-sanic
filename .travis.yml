@@ -1,11 +1,68 @@
 language: python
 
-python:
-  - "3.5"
-  - "3.5-dev"
-  - "3.6"
-  - "3.6-dev"
-  - "3.7-dev"
+matrix:
+  include:
+    - name: "Python 3.5 Sanic 0.8.3 Linux"
+      python: 3.5
+      before_install:
+        - pip install sanic==0.8.3
+    - name: "Python 3.5 Sanic 18.12 LTS Linux"
+      python: 3.5
+      before_install:
+        - pip install sanic==18.12.0
+    - name: "Python 3.6 Sanic 0.8.3 Linux"
+      python: 3.6
+      before_install:
+        - pip install sanic==0.8.3
+    - name: "Python 3.6 Sanic 18.12.0 LTS Linux"
+      python: 3.6
+      before_install:
+        - pip install sanic==18.12.0
+    - name: "Python 3.6 Sanic 19.6.2 Linux"
+      python: 3.6
+      before_install:
+        - pip install sanic==19.6.2
+    - name: "Python 3.7 Sanic 0.8.3 Linux"
+      python: 3.7
+      dist: xenial
+      before_install:
+        - pip install sanic==0.8.3
+    - name: "Python 3.7 Sanic 18.12.0 LTS Linux"
+      python: 3.7
+      dist: xenial
+      before_install:
+        - pip install sanic==18.12.0
+    - name: "Python 3.7 Sanic 19.6.2 Linux"
+      python: 3.7
+      dist: xenial
+      before_install:
+        - pip install sanic==19.6.2
+    - name: "Python 3.8 Sanic 0.8.3 Linux"
+      python: 3.8
+      dist: xenial
+      before_install:
+        - pip install sanic==0.8.3
+    - name: "Python 3.8 Sanic 18.12.0 LTS Linux"
+      python: 3.8
+      dist: xenial
+      before_install:
+        - pip install sanic==18.12.0
+    - name: "Python 3.8 Sanic 19.6.2 Linux"
+      python: 3.8
+      dist: xenial
+      before_install:
+        - pip install sanic==19.6.2
+    - name: "Python 3.7.2 on macOS"
+      os: osx
+      osx_image: xcode10.2
+      language: shell
+    - name: "Python 3.7.3 on Windows"
+      os: windows
+      language: shell
+      before_install:
+        - choco install python
+        - python -m pip install --upgrade pip
+        - pip install sanic==0.8.3
 
 install:
   - pip install -r requirements.txt
