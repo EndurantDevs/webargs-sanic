@@ -83,6 +83,24 @@ matrix:
         - choco install python --params "PrependPath=1"
         - export PATH
         - python -m pip install --upgrade pip
+        - python -m pip install sanic==0.8.3
+    - name: "Python 3.7 Sanic 18.12.0 Windows OS"
+      os: windows
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+      language: shell
+      before_install:
+        - choco install python --params "PrependPath=1"
+        - export PATH
+        - python -m pip install --upgrade pip
+        - python -m pip install sanic==18.12.0
+    - name: "Python 3.7 Sanic 19.6.2 Windows OS"
+      os: windows
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+      language: shell
+      before_install:
+        - choco install python --params "PrependPath=1"
+        - export PATH
+        - python -m pip install --upgrade pip
         - python -m pip install sanic==19.6.2
 
 install:
