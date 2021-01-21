@@ -1,5 +1,9 @@
 # webargs-sanic
-[Sanic](https://github.com/huge-success/sanic) integration with [Webargs](https://github.com/sloria/webargs). Parsing and validating request arguments: headers, arguments, cookies, files, json, etc.
+[Sanic](https://github.com/huge-success/sanic) integration with [Webargs](https://github.com/sloria/webargs). 
+
+Parsing and validating request arguments: headers, arguments, cookies, files, json, etc.
+
+IMPORTANT: From version 2.0.0 webargs-sanic requires you to have webargs >=7.0.1. Please be aware of changes happened in version of webargs > 6.0.0. If you need support of webargs 5.x with no location definition, please use previous version(1.5.0) of this module from pypi. 
 
 [![Build Status](https://img.shields.io/travis/EndurantDevs/webargs-sanic.svg?logo=travis)](https://travis-ci.org/EndurantDevs/webargs-sanic) [![Latest Version](https://img.shields.io/pypi/v/webargs-sanic.svg)](https://pypi.python.org/pypi/webargs-sanic/) [![Python Versions](https://img.shields.io/pypi/pyversions/webargs-sanic.svg)](https://github.com/EndurantDevs/webargs-sanic/blob/master/setup.py) [![Tests Coverage](https://img.shields.io/codecov/c/github/EndurantDevs/webargs-sanic/master.svg)](https://codecov.io/gh/EndurantDevs/webargs-sanic)
 
