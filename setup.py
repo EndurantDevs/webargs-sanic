@@ -4,7 +4,7 @@ from setuptools import setup
 
 REQUIRES = [
     'sanic>=0.8.3',
-    'webargs>=5.1.3'
+    'webargs>=7.0.1'
 ]
 
 def find_version(fname):

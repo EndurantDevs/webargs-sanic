@@ -23,8 +23,8 @@ hello_args = {
 }
 
 @app.route('/')
-@use_args(hello_args)
-async def index(args):
+@use_args(hello_args, location="query")
+async def index(request, args):
     return text('Hello ' + args['name'])
 
 
@@ -44,7 +44,7 @@ from webargs_sanic.sanicparser import use_args, use_kwargs
 app = Sanic(__name__)
 
 class EchoMethodViewUseArgs(HTTPMethodView):
-    @use_args({"val": fields.Int()})
+    @use_args({"val": fields.Int()}, location="form")
     async def post(self, request, args):
         return json(args)
 
@@ -53,7 +53,7 @@ app.add_route(EchoMethodViewUseArgs.as_view(), "/echo_method_view_use_args")
 
 
 class EchoMethodViewUseKwargs(HTTPMethodView):
-    @use_kwargs({"val": fields.Int()})
+    @use_kwargs({"val": fields.Int()}, location="query")
     async def post(self, request, val):
         return json({"val": val})
 
@@ -74,7 +74,7 @@ app = Sanic(__name__)
 @app.route("/echo_view_args_validated/<value>", methods=["GET"])
 async def echo_use_args_validated(request, args):
     parsed = await parser.parse(
-        {"value": fields.Int(required=True, validate=lambda args: args["value"] > 42)}, request, locations=("view_args",)
+        {"value": fields.Int(required=True, validate=lambda args: args["value"] > 42)}, request, location="view_args"
     )
     return json(parsed)
 
@@ -133,7 +133,7 @@ storage = InMemory()
 
 
 @blueprint.put('/user/')
-@use_kwargs(user_update)
+@use_kwargs(user_update, location="json_or_form")
 async def update_user(request, user_id, user_data):
     storage.update_or_404(user_id, user_data)
     return response.text('', status=204)

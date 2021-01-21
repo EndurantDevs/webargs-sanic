@@ -9,7 +9,7 @@ from packaging import version
 
 from webargs import fields, ValidationError, missing
 from webargs_sanic.sanicparser import parser, abort
-from webargs.core import MARSHMALLOW_VERSION_INFO
+#from webargs.core import MARSHMALLOW_VERSION_INFO
 
 from .apps.sanic_app import app
 from webargs.testing import CommonTestCase
@@ -29,6 +29,7 @@ class TestSanicParser(CommonTestCase):
     def test_parse_files(self, testapp):
         pass
 
+
     def create_testapp(self, app):
         loop = asyncio.get_event_loop()
         self.loop = loop
@@ -45,7 +46,7 @@ class TestSanicParser(CommonTestCase):
         res = testapp.get("/echo_view_arg/foo", expect_errors=True)
         assert res.status_code == 422
         assert res.content_type == "application/json"
-        assert res.json == {"errors": {"view_arg": ["Not a valid integer."]}}
+        assert res.json == {'view_args': {'view_arg': ['Not a valid integer.']}}
 
     def test_use_args_with_view_args_parsing(self, testapp):
         res = testapp.get("/echo_view_arg_use_args/42")
@@ -69,20 +70,22 @@ class TestSanicParser(CommonTestCase):
 
     def test_invalid_json(self, testapp):
         res = testapp.post(
-            "/echo",
+            "/echo_json",
             '{"foo": "bar", jdhfjdhjsd}',
             headers={"Accept": "application/json", "Content-Type": "application/json"},
             expect_errors=True,
         )
         assert res.status_code == 400
-        assert res.json == {'errors': {'json': ['Invalid JSON body.']}}
+        assert res.json == {'json': ['Invalid JSON body.']}
 
     # regression test for https://github.com/sloria/webargs/issues/145
     def test_nested_many_with_data_key(self, testapp):
-        res = testapp.post_json("/echo_nested_many_data_key", {"x_field": [{"id": 42}]})
-        # https://github.com/marshmallow-code/marshmallow/pull/714
-        if MARSHMALLOW_VERSION_INFO[0] < 3:
-            assert res.json == {"x_field": [{"id": 42}]}
+        post_with_raw_fieldname_args = (
+            "/echo_nested_many_data_key",
+            {"x_field": [{"id": 42}]},
+        )
+        res = testapp.post_json(*post_with_raw_fieldname_args, expect_errors=True)
+        assert res.status_code == 422
 
         res = testapp.post_json("/echo_nested_many_data_key", {"X-Field": [{"id": 24}]})
         assert res.json == {"x_field": [{"id": 24}]}
@@ -103,27 +106,24 @@ def test_abort_called_on_validation_error(mock_abort, loop):
     abort_args, abort_kwargs = mock_abort.call_args
     assert abort_args[0] == 422
     expected_msg = "Invalid value."
-    assert abort_kwargs["messages"] == [expected_msg]
+    assert abort_kwargs["messages"]["query"] == [expected_msg]
     assert type(abort_kwargs["exc"]) == ValidationError
 
 
-def test_parse_files(loop):
 
+
+def test_parse_files(loop):
+    print(version.parse(sanic_version))
     if (version.parse(sanic_version) < version.parse("19.0.0")):
         res = app.test_client.post(
             "/echo_file", data={"myfile": io.BytesIO(b"data")}, gather_request=False
         )
     else:
         res = app.test_client.post(
-            "/echo_file", files=[("myfile", io.BytesIO(b"data"))], gather_request=False
-        )
+        "/echo_file", files=[("myfile", io.BytesIO(b"data"))], gather_request=False
+    )
+
     assert res.json == {"myfile": "data"}
-
-
-def test_parse_form_returns_missing_if_no_form():
-    req = mock.Mock()
-    req.form.get.side_effect = AttributeError("no form")
-    assert parser.parse_form(req, "foo", fields.Field()) is missing
 
 
 def test_abort_with_message():
