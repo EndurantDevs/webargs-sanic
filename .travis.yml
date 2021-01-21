@@ -28,9 +28,9 @@ matrix:
       before_install:
         - pip install sanic==19.6.2
     - name: "Python 3.6 Sanic 20.12.0 Linux"
-        python: 3.6
-        before_install:
-          - pip install sanic==20.12.0
+      python: 3.6
+      before_install:
+        - pip install sanic==20.12.0
     - name: "Python 3.7 Sanic 0.8.3 Linux"
       python: 3.7
       dist: xenial
@@ -47,10 +47,10 @@ matrix:
       before_install:
         - pip install sanic==19.6.2
     - name: "Python 3.7 Sanic 20.12.0 Linux"
-        python: 3.7
-        dist: xenial
-        before_install:
-          - pip install sanic==20.12.0
+      python: 3.7
+      dist: xenial
+      before_install:
+        - pip install sanic==20.12.0
     - name: "Python 3 Sanic 0.8.3 Mac OS"
       os: osx
       language: sh
@@ -85,16 +85,16 @@ matrix:
         - source ~/venv/bin/activate
         - pip install sanic==19.6.2
     - name: "Python 3 Sanic 20.12.0 Mac OS"
-        os: osx
-        language: sh
-        addons:
-          homebrew:
-            packages: python3
-        before_install:
-          - pip3 install virtualenv
-          - virtualenv -p python3 ~/venv
-          - source ~/venv/bin/activate
-          - pip install sanic==20.12.0
+      os: osx
+      language: sh
+      addons:
+        homebrew:
+          packages: python3
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p python3 ~/venv
+        - source ~/venv/bin/activate
+        - pip install sanic==20.12.0
     - name: "Python 3.7 Sanic 0.8.3 Windows OS"
       os: windows
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
@@ -123,14 +123,15 @@ matrix:
         - python -m pip install --upgrade pip
         - python -m pip install sanic==19.6.2
     - name: "Python 3.7 Sanic 20.12.0 Windows OS"
-        os: windows
-        env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
-        language: shell
-        before_install:
-          - choco install python --params "PrependPath=1"
-          - export PATH
-          - python -m pip install --upgrade pip
-          - python -m pip install sanic==20.12.0
+      os: windows
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+      language: shell
+      before_install:
+        - choco install python --params "PrependPath=1"
+        - export PATH
+        - python -m pip install --upgrade pip
+        - python -m pip install sanic==20.12.0
+
 install:
   - pip install -r requirements.txt
 
