@@ -43,37 +43,21 @@ matrix:
       dist: xenial
       before_install:
         - pip install sanic==20.12.0
-    - name: "Python 3.7 Sanic 0.8.3 Linux"
-      python: 3.8
-      dist: xenial
-      before_install:
-        - pip install sanic==0.8.3
-    - name: "Python 3.7 Sanic 18.12.0 LTS Linux"
+    - name: "Python 3.8 Sanic 18.12.0 LTS Linux"
       python: 3.8
       dist: xenial
       before_install:
         - pip install sanic==18.12.0
-    - name: "Python 3.7 Sanic 19.6.2 Linux"
+    - name: "Python 3.8 Sanic 19.6.2 Linux"
       python: 3.8
       dist: xenial
       before_install:
         - pip install sanic==19.6.2
-    - name: "Python 3.7 Sanic 20.12.0 Linux"
+    - name: "Python 3.8 Sanic 20.12.0 Linux"
       python: 3.8
       dist: xenial
       before_install:
         - pip install sanic==20.12.0
-    - name: "Python 3 Sanic 0.8.3 Mac OS"
-      os: osx
-      language: sh
-      addons:
-        homebrew:
-          packages: python3
-      before_install:
-        - pip3 install virtualenv
-        - virtualenv -p python3 ~/venv
-        - source ~/venv/bin/activate
-        - pip install sanic==19.6.2
     - name: "Python 3 Sanic 18.12.0 Mac OS"
       os: osx
       language: sh
@@ -107,16 +91,6 @@ matrix:
         - virtualenv -p python3 ~/venv
         - source ~/venv/bin/activate
         - pip install sanic==20.12.0
-    - name: "Python 3.7 Sanic 0.8.3 Windows OS"
-      os: windows
-      env: PATH=/c/Python37:/c/Python37/Scripts:/c/Python38:/c/Python38/Scripts:/c/Python39:/c/Python39/Scripts:$PATH
-      language: shell
-      before_install:
-        - choco install python --params "PrependPath=1"
-        - export PATH
-        - python -m ensurepip
-        - python -m pip install --upgrade pip
-        - python -m pip install sanic==0.8.3
     - name: "Python 3.7 Sanic 18.12.0 Windows OS"
       os: windows
       env: PATH=/c/Python37:/c/Python37/Scripts:/c/Python38:/c/Python38/Scripts:/c/Python39:/c/Python39/Scripts:$PATH

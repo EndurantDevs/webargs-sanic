@@ -1,16 +1,17 @@
 webargs>=7.0.1
-sanic==0.8.3
+sanic
 
 # Testing
-pytest>=3.8.0
-pytest-cov>=2.6.0
-webtest-sanic>=0.2.0
-mock>=2.0.0
-pytest-aiohttp>=0.3.0
+pytest
+pytest-cov
+webtest-sanic>=0.3.0
+mock
+pytest-aiohttp
 
-# Packaging
-packaging
-twine>=1.11.0
+pytest>=5.0.1
+pytest-cov>=2.6.0
+webtest
 
 #Coverage
 codecov>=2.0.15
+coverage>=4.5.1
