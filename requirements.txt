@@ -8,7 +8,6 @@ webtest-sanic>=0.3.0
 mock
 pytest-aiohttp
 
-pytest>=5.0.1
 pytest-cov>=2.6.0
 webtest
 
