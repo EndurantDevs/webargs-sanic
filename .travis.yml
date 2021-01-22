@@ -7,14 +7,6 @@ jobs:
 
 matrix:
   include:
-    - name: "Python 3.5 Sanic 0.8.3 Linux"
-      python: 3.5
-      before_install:
-        - pip install sanic==0.8.3
-    - name: "Python 3.5 Sanic 18.12 LTS Linux"
-      python: 3.5
-      before_install:
-        - pip install sanic==18.12.0
     - name: "Python 3.6 Sanic 0.8.3 Linux"
       python: 3.6
       before_install:
@@ -48,6 +40,26 @@ matrix:
         - pip install sanic==19.6.2
     - name: "Python 3.7 Sanic 20.12.0 Linux"
       python: 3.7
+      dist: xenial
+      before_install:
+        - pip install sanic==20.12.0
+    - name: "Python 3.7 Sanic 0.8.3 Linux"
+      python: 3.8
+      dist: xenial
+      before_install:
+        - pip install sanic==0.8.3
+    - name: "Python 3.7 Sanic 18.12.0 LTS Linux"
+      python: 3.8
+      dist: xenial
+      before_install:
+        - pip install sanic==18.12.0
+    - name: "Python 3.7 Sanic 19.6.2 Linux"
+      python: 3.8
+      dist: xenial
+      before_install:
+        - pip install sanic==19.6.2
+    - name: "Python 3.7 Sanic 20.12.0 Linux"
+      python: 3.8
       dist: xenial
       before_install:
         - pip install sanic==20.12.0
