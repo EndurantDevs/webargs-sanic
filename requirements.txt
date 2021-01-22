@@ -7,8 +7,6 @@ pytest-cov
 webtest-sanic>=0.3.0
 mock
 pytest-aiohttp
-
-pytest-cov>=2.6.0
 webtest
 
 #Coverage
