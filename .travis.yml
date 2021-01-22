@@ -102,6 +102,7 @@ matrix:
       before_install:
         - choco install python --params "PrependPath=1"
         - export PATH
+        - python -m ensurepip
         - python -m pip install --upgrade pip
         - python -m pip install sanic==0.8.3
     - name: "Python 3.7 Sanic 18.12.0 Windows OS"
@@ -111,6 +112,7 @@ matrix:
       before_install:
         - choco install python --params "PrependPath=1"
         - export PATH
+        - python -m ensurepip
         - python -m pip install --upgrade pip
         - python -m pip install sanic==18.12.0
     - name: "Python 3.7 Sanic 19.6.2 Windows OS"
@@ -120,6 +122,7 @@ matrix:
       before_install:
         - choco install python --params "PrependPath=1"
         - export PATH
+        - python -m ensurepip
         - python -m pip install --upgrade pip
         - python -m pip install sanic==19.6.2
     - name: "Python 3.7 Sanic 20.12.0 Windows OS"
@@ -129,6 +132,7 @@ matrix:
       before_install:
         - choco install python --params "PrependPath=1"
         - export PATH
+        - python -m ensurepip
         - python -m pip install --upgrade pip
         - python -m pip install sanic==20.12.0
 
