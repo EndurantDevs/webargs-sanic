@@ -24,18 +24,15 @@ from sanic.request import Request
 from sanic.exceptions import InvalidUsage
 
 import typing
-import json
 
 from webargs import core
 from webargs.asyncparser import AsyncParser
-from webargs.core import json as wa_json
 from webargs.multidictproxy import MultiDictProxy
-from marshmallow import Schema, ValidationError, RAISE
+from marshmallow import Schema, RAISE
 
-@sanic.exceptions.add_status_code(400)
-@sanic.exceptions.add_status_code(422)
 class HandleValidationError(sanic.exceptions.SanicException):
-    pass
+    status_code = 422
+    quiet = True
 
 
 def abort(http_status_code, exc=None, **kwargs):
@@ -44,15 +41,13 @@ def abort(http_status_code, exc=None, **kwargs):
 
     From Flask-Restful. See NOTICE file for license information.
     """
-    try:
-        sanic.exceptions.abort(http_status_code, exc)
-    except sanic.exceptions.SanicException as err:
-        err.data = kwargs
+    err = HandleValidationError(status_code=http_status_code)
+    err.data = kwargs
 
-        if exc and not hasattr(exc, 'messages'):
-            exc.messages = kwargs.get('messages')
-        err.exc = exc
-        raise err
+    if exc and not hasattr(exc, 'messages'):
+        exc.messages = kwargs.get('messages')
+    err.exc = exc
+    raise err
 
 
 def is_json_request(req):

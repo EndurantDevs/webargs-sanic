@@ -4,10 +4,10 @@ sanic
 # Testing
 pytest
 pytest-cov
-webtest-sanic>=0.3.0
 mock
 pytest-aiohttp
 webtest
+sanic_testing
 
 #Coverage
 codecov>=2.0.15

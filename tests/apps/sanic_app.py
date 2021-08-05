@@ -27,7 +27,7 @@ class HelloSchema(ma.Schema):
 strict_kwargs = {} #{"strict": True} if MARSHMALLOW_VERSION_INFO[0] < 3 else {}
 hello_many_schema = HelloSchema(many=True, **strict_kwargs)
 
-app = Sanic(__name__)
+app = Sanic(__name__.replace('.', '_'))
 if (version.parse(sanic_version) < version.parse("20.0.0")):
     app.config.from_object(TestAppConfig)
 else:
@@ -244,6 +244,6 @@ async def echo_use_kwargs_missing(request, username, **kwargs):
 # Return validation errors as JSON
 @app.exception(HandleValidationError)
 async def handle_validation_error(request, err):
-    if err.data["status_code"] == 422:
+    if err.status_code == 422:
         assert isinstance(err.data["schema"], ma.Schema)
-    return J(err.exc.messages, status=err.data["status_code"])
+    return J(err.exc.messages, status=err.status_code)
