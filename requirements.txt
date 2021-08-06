@@ -4,6 +4,7 @@ sanic
 # Testing
 pytest
 pytest-cov
+webtest-sanic>=0.3.0
 mock
 pytest-aiohttp
 webtest

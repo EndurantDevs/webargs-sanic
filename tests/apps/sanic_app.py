@@ -79,13 +79,19 @@ async def echo_use_args(request, args):
     return J(args)
 
 
-@app.route("/echo_use_args_validated", methods=["GET", "POST"])
+@app.route("/echo_use_args_validated", methods=["POST"])
 @use_args(
-    {"value": fields.Int(required=True)}, location="query" ,validate=lambda args: args["value"] > 42
+    {"value": fields.Int()}, validate=lambda args: args["value"] > 42, location="form"
 )
 async def echo_use_args_validated(request, args):
     return J(args)
 
+@app.route("/echo_use_args_validated", methods=["GET"])
+@use_args(
+    {"value": fields.Int()}, validate=lambda args: args["value"] > 42, location="query"
+)
+async def echo_use_args_validated(request, args):
+    return J(args)
 
 @app.route("/echo_ignoring_extra_data", methods=["POST"])
 async def echo_json_ignore_extra_data(request):
