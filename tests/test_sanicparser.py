@@ -31,8 +31,12 @@ class TestSanicParser(CommonTestCase):
             return TestApp(app, loop=self.loop)
         else:
             from .utils import SanicTestingTestApp
-
+            self.loop = None
             return SanicTestingTestApp(app)
+
+    def after_create_app(self):
+        if self.loop:
+            self.loop.close()
 
     # testing of file uploads is made through sanic.test_client
     # please check test_parse_files function below
