@@ -48,7 +48,7 @@ waitress==1.4.4
 webargs==7.0.1
 webencodings==0.5.1
 WebOb==1.8.6
-websockets==8.1
+websockets==9.1
 WebTest==2.0.35
 webtest-sanic==0.3.0
 yarl==1.6.3
