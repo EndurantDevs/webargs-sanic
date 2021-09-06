@@ -1,0 +1,14 @@
+webargs>=7.0.1
+sanic
+
+# Testing
+pytest
+pytest-cov
+webtest-sanic>=0.4.2
+mock
+pytest-aiohttp
+webtest
+
+#Coverage
+codecov>=2.0.15
+coverage>=4.5.1
