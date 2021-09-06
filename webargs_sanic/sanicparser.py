@@ -45,7 +45,7 @@ def abort(http_status_code, exc=None, **kwargs):
 
     From Flask-Restful. See NOTICE file for license information.
     """
-    err = HandleValidationError(status_code=http_status_code)
+    err = HandleValidationError(status_code=http_status_code, message='')
     err.data = kwargs
 
     if exc and not hasattr(exc, 'messages'):
