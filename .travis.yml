@@ -162,6 +162,39 @@ matrix:
         - virtualenv -p python3 ~/venv
         - source ~/venv/bin/activate
         - pip install sanic==20.12.0
+    - name: "Python 3 Sanic 21.3.4 Mac OS"
+      os: osx
+      language: sh
+      addons:
+        homebrew:
+          packages: python3
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p python3 ~/venv
+        - source ~/venv/bin/activate
+        - pip install sanic==21.3.4
+    - name: "Python 3 Sanic 21.6.0 Mac OS"
+      os: osx
+      language: sh
+      addons:
+        homebrew:
+          packages: python3
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p python3 ~/venv
+        - source ~/venv/bin/activate
+        - pip install sanic==21.6.0
+    - name: "Python 3 Sanic 21.6.2 Mac OS"
+      os: osx
+      language: sh
+      addons:
+        homebrew:
+          packages: python3
+      before_install:
+        - pip3 install virtualenv
+        - virtualenv -p python3 ~/venv
+        - source ~/venv/bin/activate
+        - pip install sanic==21.6.2
     - name: "Python 3 Sanic 18.12.0 Windows OS"
       os: windows
       env: PATH=/c/Python37:/c/Python37/Scripts:/c/Python38:/c/Python38/Scripts:/c/Python39:/c/Python39/Scripts:$PATH
@@ -192,6 +225,36 @@ matrix:
         - python -m ensurepip
         - python -m pip install --upgrade pip
         - python -m pip install sanic==20.12.0
+    - name: "Python 3 Sanic 21.3.4 Windows OS"
+      os: windows
+      env: PATH=/c/Python37:/c/Python37/Scripts:/c/Python38:/c/Python38/Scripts:/c/Python39:/c/Python39/Scripts:$PATH
+      language: shell
+      before_install:
+        - choco install python --params "PrependPath=1"
+        - export PATH
+        - python -m ensurepip
+        - python -m pip install --upgrade pip
+        - python -m pip install sanic==21.3.4
+    - name: "Python 3 Sanic 21.6.0 Windows OS"
+      os: windows
+      env: PATH=/c/Python37:/c/Python37/Scripts:/c/Python38:/c/Python38/Scripts:/c/Python39:/c/Python39/Scripts:$PATH
+      language: shell
+      before_install:
+        - choco install python --params "PrependPath=1"
+        - export PATH
+        - python -m ensurepip
+        - python -m pip install --upgrade pip
+        - python -m pip install sanic==21.6.0
+    - name: "Python 3 Sanic 21.6.2 Windows OS"
+      os: windows
+      env: PATH=/c/Python37:/c/Python37/Scripts:/c/Python38:/c/Python38/Scripts:/c/Python39:/c/Python39/Scripts:$PATH
+      language: shell
+      before_install:
+        - choco install python --params "PrependPath=1"
+        - export PATH
+        - python -m ensurepip
+        - python -m pip install --upgrade pip
+        - python -m pip install sanic==21.6.2
 
 install:
   - pip install -r undef_requirements.txt
