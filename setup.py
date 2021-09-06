@@ -53,4 +53,9 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
     ],
+    requirements = [
+        'sanic>=0.8.3',
+        'webargs>=7.0.1'
+    ],
+    tests_require = ["pytest", "pytest-cov", "webtest-sanic>=0.4.2", "mock", "pytest-aiohttp", "webtest"],
 )
