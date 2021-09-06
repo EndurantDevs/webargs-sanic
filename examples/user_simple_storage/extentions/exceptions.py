@@ -22,6 +22,6 @@ def handle_404(request, exception):
 
 
 @blueprint.exception(HandleValidationError)
-def handle_422(request, exception):
+def handle_it(request, exception):
     error = {"messages": exception.exc.messages}
-    return json(error, status=HTTPStatus.UNPROCESSABLE_ENTITY)
+    return json(error, status=exception.status_code)
