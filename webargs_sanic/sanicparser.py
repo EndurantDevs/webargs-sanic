@@ -31,8 +31,7 @@ from webargs.asyncparser import AsyncParser
 from webargs.core import json as wa_json
 from webargs.multidictproxy import MultiDictProxy
 from marshmallow import Schema, ValidationError, RAISE
-from packaging import version
-from sanic import __version__ as sanic_version
+
 
 class HandleValidationError(sanic.exceptions.SanicException):
     status_code = 422
