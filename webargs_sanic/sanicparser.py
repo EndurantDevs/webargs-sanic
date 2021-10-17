@@ -19,24 +19,25 @@ Example: ::
     async def index(args):
         return 'Hello ' + args['name']
 """
+import typing
 import sanic
 from sanic.request import Request
 from sanic.exceptions import InvalidUsage
 
-import typing
-import json
-
 from webargs import core
 from webargs.asyncparser import AsyncParser
-from webargs.core import json as wa_json
 from webargs.multidictproxy import MultiDictProxy
-from marshmallow import Schema, ValidationError, RAISE
-from packaging import version
-from sanic import __version__ as sanic_version
+from marshmallow import Schema, RAISE, ValidationError
 
 class HandleValidationError(sanic.exceptions.SanicException):
+    """Define default status code to process"""
     status_code = 422
     quiet = True
+    exc = None
+    message = None
+    data = None
+    schema = None
+    error_headers = None
 
 
 def abort(http_status_code, exc=None, **kwargs):
@@ -45,16 +46,32 @@ def abort(http_status_code, exc=None, **kwargs):
 
     From Flask-Restful. See NOTICE file for license information.
     """
-    err = HandleValidationError(status_code=http_status_code, message='')
-    err.data = kwargs
 
-    if exc and not hasattr(exc, 'messages'):
-        exc.messages = kwargs.get('messages')
-    err.exc = exc
+    if kwargs.get('message'):
+        message = kwargs.get('message')
+    else:
+        if exc and hasattr(exc, 'message'):
+            message = exc.message
+        else:
+            message = "{'validation_error': 'no message defined'}"
+
+    err = HandleValidationError(status_code=http_status_code, message=message)
+    if exc:
+        err.exc = exc
+    else:
+        err.exc = err
+    err.exc.message = message
+    err.data = kwargs
+    if kwargs.get('schema'):
+        err.schema = kwargs.get('schema')
+
+    if kwargs.get('error_headers'):
+        err.error_headers = kwargs.get('error_headers')
     raise err
 
 
 def is_json_request(req):
+    """check the validity of json via core functionality"""
     content_type = req.content_type
     return core.is_json(content_type)
 
@@ -68,33 +85,33 @@ class SanicParser(AsyncParser):
         "path": RAISE,
         **core.Parser.DEFAULT_UNKNOWN_BY_LOCATION,
     }
-    __location_map__ = dict(view_args="load_view_args", path="load_view_args", **core.Parser.__location_map__)
+    __location_map__ = dict(view_args="load_view_args", path="load_view_args",
+                            **core.Parser.__location_map__)
 
 
-    async def load_json_or_form(
+    def load_json_or_form(
         self, req, schema: Schema
     ) -> typing.Union[typing.Dict, MultiDictProxy]:
-        data = await self.load_json(req, schema)
+        data = self.load_json(req, schema)
         if data is not core.missing:
             return data
-        return await self.load_form(req, schema)
+        return self.load_form(req, schema)
 
-    async def load_json(self, req, schema: Schema):
+    def load_json(self, req, schema: Schema):
         """Return a parsed json payload from the request."""
         if not (req.body and is_json_request(req)):
             return core.missing
 
         try:
             json_data = req.load_json()
-        except InvalidUsage as e:
-            return self._handle_invalid_json_error(e, req)
-        except UnicodeDecodeError as e:
-            return self._handle_invalid_json_error(e, req)
+        except (UnicodeDecodeError, InvalidUsage, ValueError) as json_exception:
+            self._handle_invalid_json_error(json_exception, req, schema)
 
         return json_data
 
     def load_match_info(self, req, schema: Schema) -> typing.Mapping:
         """Load the request's ``match_info``."""
+        # pylint: disable=unused-argument, no-self-use
         return req.match_info
 
     def get_request_from_view_args(
@@ -114,13 +131,14 @@ class SanicParser(AsyncParser):
 
     def load_view_args(self, req, schema):
         """Return the request's ``view_args`` or ``missing`` if there are none."""
+        # pylint: disable=no-self-use
         return MultiDictProxy(req.match_info, schema) or core.missing
 
     def load_querystring(self, req, schema):
         """Return query params from the request as a MultiDictProxy."""
         return MultiDictProxy(req.args, schema)
 
-    async def load_form(self, req, schema):
+    def load_form(self, req, schema):
         """Return form values from the request as a MultiDictProxy."""
         try:
             return MultiDictProxy(req.form, schema)
@@ -140,18 +158,33 @@ class SanicParser(AsyncParser):
         """Return files from the request as a MultiDictProxy."""
         return MultiDictProxy(req.files, schema)
 
-
-    def handle_error(self, error, req, schema, error_status_code=None, error_headers=None):
+    def handle_error(
+            self,
+            error: ValidationError,
+            req,
+            schema: Schema,
+            *,
+            error_status_code: typing.Optional[int],
+            error_headers: typing.Optional[typing.Mapping[str, str]]
+    ) -> typing.NoReturn:
         """Handles errors during parsing. Aborts the current HTTP request and
         responds with a 422 error.
         """
-        status_code = error_status_code or getattr(error, "status_code", self.DEFAULT_VALIDATION_STATUS)
-        abort(status_code, exc=error, messages=error.messages, schema=schema, status_code=status_code)
+        status_code = error_status_code or getattr(error, "status_code",
+                                                   self.DEFAULT_VALIDATION_STATUS)
+        abort(status_code, exc=error, message=error.messages,
+              schema=schema, status_code=status_code, error_headers=error_headers, req=req)
 
-    def _handle_invalid_json_error(self, error, req, *args, **kwargs):
-        status_code=400
-        abort(status_code, exc=error, messages={"json": ["Invalid JSON body."]}, status_code=status_code)
-
+    def _handle_invalid_json_error(
+            self,
+            error: typing.Union[UnicodeDecodeError, InvalidUsage, ValueError],
+            req,
+            *args,
+            **kwargs
+    ) -> typing.NoReturn:
+        http_status_code=400
+        abort(http_status_code, exc=error, message={"json": ["Invalid JSON body."]},
+              status_code=http_status_code, req=req)
 
 
 parser = SanicParser()

@@ -1,4 +1,5 @@
 from sanic import Sanic
+from sanic.log import logger
 from sanic.response import json as J
 from sanic.views import HTTPMethodView
 from sanic import __version__ as sanic_version
@@ -81,7 +82,7 @@ async def echo_use_args(request, args):
 
 @app.route("/echo_use_args_validated", methods=["GET", "POST"])
 @use_args(
-    {"value": fields.Int(required=True)}, location="query" ,validate=lambda args: args["value"] > 42
+    {"value": fields.Int(required=True, validate=lambda value: value > 42)}, location="query"
 )
 async def echo_use_args_validated(request, args):
     return J(args)
@@ -244,6 +245,7 @@ async def echo_use_kwargs_missing(request, username, **kwargs):
 # Return validation errors as JSON
 @app.exception(HandleValidationError)
 async def handle_validation_error(request, err):
+    app.config.update({'FALLBACK_ERROR_FORMAT': 'json'})
     if err.status_code == 422:
         assert isinstance(err.data["schema"], ma.Schema)
-    return J(err.exc.messages, status=err.status_code)
+    return J(err.exc.message, status=err.status_code)

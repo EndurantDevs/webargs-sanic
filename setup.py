@@ -38,7 +38,7 @@ setup(
     install_requires=REQUIRES,
     license="MIT",
     zip_safe=False,
-    keywords="webargs-sanic webargs sanic testing",
+    keywords="webargs-sanic webargs sanic web args validation",
     classifiers=[
         "Intended Audience :: Developers",
         "Environment :: Web Environment",
@@ -51,7 +51,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+        "DEVELOPMENT STATUS :: 5 - PRODUCTION/STABLE",
     ],
     requirements = [
         'sanic>=0.8.3',

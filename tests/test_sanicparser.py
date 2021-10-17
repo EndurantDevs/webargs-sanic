@@ -4,19 +4,16 @@ import json
 import mock
 
 from sanic.exceptions import SanicException
-# from sanic import __version__ as sanic_version
-# from packaging import version
+from webargs_sanic.sanicparser import HandleValidationError
 
 from webargs import ValidationError
 from webargs_sanic.sanicparser import abort
-# from webargs.core import MARSHMALLOW_VERSION_INFO
 
 from .apps.sanic_app import app
 from webargs.testing import CommonTestCase
 from webtest_sanic import TestApp
 import asyncio
 import pytest
-# import io
 
 
 class TestSanicParser(CommonTestCase):
@@ -44,7 +41,6 @@ class TestSanicParser(CommonTestCase):
 
     def test_parsing_invalid_view_arg(self, testapp):
         res = testapp.get("/echo_view_arg/foo", expect_errors=True)
-        print(res.body)
         assert res.status_code == 422
         assert res.content_type == "application/json"
         assert res.json == {'view_args': {'view_arg': ['Not a valid integer.']}}
@@ -76,6 +72,7 @@ class TestSanicParser(CommonTestCase):
             headers={"Accept": "application/json", "Content-Type": "application/json"},
             expect_errors=True,
         )
+
         assert res.status_code == 400
         assert res.json == {'json': ['Invalid JSON body.']}
 
@@ -104,7 +101,7 @@ class TestSanicParser(CommonTestCase):
         )
 
         assert res.status_code == 422
-        assert res.json == {'query': ['Invalid value.']}
+        assert res.json == {'query': {'value': ['Invalid value.']}}
 
     # def test_parse_files(self, testapp):
     #
@@ -121,26 +118,30 @@ class TestSanicParser(CommonTestCase):
 
 
 def test_abort_with_message():
-    with pytest.raises(SanicException) as excinfo:
+    try:
         abort(400, message="custom error message")
-    assert excinfo.value.data["message"] == "custom error message"
+    except HandleValidationError as exc:
+        assert exc.message == "custom error message"
 
 
 def test_abort_has_serializable_data():
-    with pytest.raises(SanicException) as excinfo:
+    try:
         abort(400, message="custom error message")
-    serialized_error = json.dumps(excinfo.value.data)
-    error = json.loads(serialized_error)
-    assert isinstance(error, dict)
-    assert error["message"] == "custom error message"
+    except HandleValidationError as err:
+        serialized_error = json.dumps(err.data)
 
-    with pytest.raises(SanicException) as excinfo:
+        error = json.loads(serialized_error)
+        assert isinstance(error, dict)
+        assert error["message"] == "custom error message"
+
+    try:
         abort(
             400,
             message="custom error message",
             exc=ValidationError("custom error message"),
         )
-    serialized_error = json.dumps(excinfo.value.data)
-    error = json.loads(serialized_error)
-    assert isinstance(error, dict)
-    assert error["message"] == "custom error message"
+    except HandleValidationError as excinfo:
+        serialized_error = json.dumps(excinfo.data)
+        error = json.loads(serialized_error)
+        assert isinstance(error, dict)
+        assert error["message"] == "custom error message"
