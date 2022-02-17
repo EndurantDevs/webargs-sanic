@@ -5,7 +5,7 @@ multidict==4.4.0
 phonenumbers==8.9.13
 python-dotenv==0.9.1
 pyyaml>=4.2b1
-sanic==18.12.0
+sanic==20.12.6
 ujson==1.35
 uvloop==0.11.2
 validate-email==1.3
