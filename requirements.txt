@@ -41,7 +41,7 @@ toml==0.10.2
 tqdm==4.56.0
 twine==3.3.0
 typing-extensions==3.7.4.3
-ujson==4.0.2
+ujson==5.2.0
 urllib3==1.26.5
 uvloop==0.14.0
 waitress==2.1.1
