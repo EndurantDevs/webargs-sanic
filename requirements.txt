@@ -44,7 +44,7 @@ typing-extensions==3.7.4.3
 ujson==4.0.2
 urllib3==1.26.5
 uvloop==0.14.0
-waitress==2.1.1
+waitress==2.1.2
 webargs==7.0.1
 webencodings==0.5.1
 WebOb==1.8.6
