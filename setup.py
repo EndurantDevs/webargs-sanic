@@ -49,9 +49,8 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-        "DEVELOPMENT STATUS :: 5 - PRODUCTION/STABLE",
+        "Development Status :: 5 - Production/Stable",
     ],
     requirements = [
         'sanic>=0.8.3',
