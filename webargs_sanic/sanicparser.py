@@ -29,6 +29,24 @@ from webargs.asyncparser import AsyncParser
 from webargs.multidictproxy import MultiDictProxy
 from marshmallow import Schema, RAISE, ValidationError
 
+from functools import singledispatch
+
+@singledispatch
+def keys_to_strings(ob):
+    return ob
+
+@keys_to_strings.register
+def _handle_dict(ob: dict):
+    return {str(k): keys_to_strings(v) for k, v in ob.items()}
+
+@keys_to_strings.register
+def _handle_list(ob: list):
+    return [keys_to_strings(v) for v in ob]
+
+@keys_to_strings.register
+def _handle_list(ob: ValueError):
+    return str(ob)
+
 class HandleValidationError(sanic.exceptions.SanicException):
     """Define default status code to process"""
     status_code = 422
@@ -170,8 +188,10 @@ class SanicParser(AsyncParser):
         """Handles errors during parsing. Aborts the current HTTP request and
         responds with a 422 error.
         """
-        status_code = error_status_code or getattr(error, "status_code",
-                                                   self.DEFAULT_VALIDATION_STATUS)
+        status_code = error_status_code or getattr(
+            error, "status_code", self.DEFAULT_VALIDATION_STATUS,
+        )
+        error.messages = keys_to_strings(error.messages)
         abort(status_code, exc=error, message=error.messages,
               schema=schema, status_code=status_code, error_headers=error_headers, req=req)
 
