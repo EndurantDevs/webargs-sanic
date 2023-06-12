@@ -19,6 +19,7 @@ Example: ::
     async def index(args):
         return 'Hello ' + args['name']
 """
+import contextlib
 import typing
 import sanic
 from sanic.request import Request
@@ -31,24 +32,30 @@ from marshmallow import Schema, RAISE, ValidationError
 
 from functools import singledispatch
 
+
 @singledispatch
 def keys_to_strings(ob):
     return ob
+
 
 @keys_to_strings.register
 def _handle_dict(ob: dict):
     return {str(k): keys_to_strings(v) for k, v in ob.items()}
 
+
 @keys_to_strings.register
 def _handle_list(ob: list):
     return [keys_to_strings(v) for v in ob]
+
 
 @keys_to_strings.register
 def _handle_list(ob: ValueError):
     return str(ob)
 
+
 class HandleValidationError(sanic.exceptions.SanicException):
     """Define default status code to process"""
+
     status_code = 422
     quiet = True
     exc = None
@@ -74,10 +81,7 @@ def abort(http_status_code, exc=None, **kwargs):
             message = "{'validation_error': 'no message defined'}"
 
     err = HandleValidationError(status_code=http_status_code, message=message)
-    if exc:
-        err.exc = exc
-    else:
-        err.exc = err
+    err.exc = exc or err
     err.exc.message = message
     err.data = kwargs
     if kwargs.get('schema'):
@@ -103,12 +107,14 @@ class SanicParser(AsyncParser):
         "path": RAISE,
         **core.Parser.DEFAULT_UNKNOWN_BY_LOCATION,
     }
-    __location_map__ = dict(view_args="load_view_args", path="load_view_args",
-                            **core.Parser.__location_map__)
-
+    __location_map__ = dict(
+        view_args="load_view_args",
+        path="load_view_args",
+        **core.Parser.__location_map__,
+    )
 
     def load_json_or_form(
-        self, req, schema: Schema
+        self, req, schema: Schema,
     ) -> typing.Union[typing.Dict, MultiDictProxy]:
         data = self.load_json(req, schema)
         if data is not core.missing:
@@ -138,11 +144,7 @@ class SanicParser(AsyncParser):
         """Get request object from a handler function or method. Used internally by
         ``use_args`` and ``use_kwargs``.
         """
-        req = None
-        for arg in args:
-            if isinstance(arg, Request):
-                req = arg
-                break
+        req = next((arg for arg in args if isinstance(arg, Request)), None)
         if not isinstance(req, Request):
             raise ValueError("Request argument not found for handler")
         return req
@@ -154,14 +156,16 @@ class SanicParser(AsyncParser):
 
     def load_querystring(self, req, schema):
         """Return query params from the request as a MultiDictProxy."""
-        return MultiDictProxy(req.args, schema)
+        if req.json is not None:
+            return MultiDictProxy(req.json, schema)
+        if req.args is not None:
+            return MultiDictProxy(req.args, schema)
+        return core.missing
 
     def load_form(self, req, schema):
         """Return form values from the request as a MultiDictProxy."""
-        try:
+        with contextlib.suppress(AttributeError):
             return MultiDictProxy(req.form, schema)
-        except AttributeError:
-            pass
         return core.missing
 
     def load_headers(self, req, schema):

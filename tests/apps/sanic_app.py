@@ -1,5 +1,4 @@
 from sanic import Sanic
-from sanic.log import logger
 from sanic.response import json as J
 from sanic.views import HTTPMethodView
 from sanic import __version__ as sanic_version
@@ -9,7 +8,6 @@ from packaging import version
 import marshmallow as ma
 from webargs import fields, ValidationError
 from webargs_sanic.sanicparser import parser, use_args, use_kwargs, HandleValidationError
-#from webargs.core import MARSHMALLOW_VERSION_INFO
 import asyncio
 
 
@@ -25,11 +23,11 @@ class HelloSchema(ma.Schema):
     name = fields.Str(missing="World", validate=lambda n: len(n) >= 3)
 
 
-strict_kwargs = {} #{"strict": True} if MARSHMALLOW_VERSION_INFO[0] < 3 else {}
+strict_kwargs = {}  # {"strict": True} if MARSHMALLOW_VERSION_INFO[0] < 3 else {}
 hello_many_schema = HelloSchema(many=True, **strict_kwargs)
 
 app = Sanic(__name__.replace('.', '_'))
-if (version.parse(sanic_version) < version.parse("20.0.0")):
+if version.parse(sanic_version) < version.parse("20.0.0"):
     app.config.from_object(TestAppConfig)
 else:
     app.update_config(TestAppConfig)
@@ -37,7 +35,7 @@ else:
 
 @app.route("/echo_lol", methods=["GET", "POST"])
 async def echo_lol(request):
-    #just FORFUN test
+    # just FORFUN test
     parsed1 = parser.parse(hello_args, request, location="headers")
     parsed2 = parser.parse(hello_args, request, location="headers")
     parsed3 = parser.parse(hello_args, request, location="headers")
@@ -61,6 +59,7 @@ async def echo_query(request):
 async def echo_form(request):
     parsed = await parser.parse(hello_args, request, location="form")
     return J(parsed)
+
 
 @app.route("/echo_json", methods=["POST"])
 async def echo_json(request):
@@ -93,6 +92,7 @@ async def echo_json_ignore_extra_data(request):
     parsed = await parser.parse(hello_args, request, unknown=ma.EXCLUDE)
     return J(parsed)
 
+
 @app.route("/echo_use_kwargs", methods=["GET", "POST"])
 @use_kwargs(hello_args, location="query")
 async def echo_use_kwargs(request, name):
@@ -107,13 +107,13 @@ async def multi(request):
 
 @app.route("/echo_multi_form", methods=["POST"])
 async def multi_form(request):
-    parsed = await parser.parse(hello_multiple, request, location="form");
+    parsed = await parser.parse(hello_multiple, request, location="form")
     return J(parsed)
 
 
 @app.route("/echo_multi_json", methods=["POST"])
 async def multi_json(request):
-    parsed = await parser.parse(hello_multiple, request);
+    parsed = await parser.parse(hello_multiple, request)
     return J(parsed)
 
 
