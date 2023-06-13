@@ -11,7 +11,6 @@ from .apps.sanic_app import app as myapp
 
 @pytest.fixture
 def app():
-    # myapp.listeners = {}
     return myapp
 
 
@@ -75,17 +74,15 @@ def test_invalid_json(app):
 
 # regression test for https://github.com/sloria/webargs/issues/145
 def test_nested_many_with_data_key(app):
-    post_with_raw_fieldname_args = (
-        "/echo_nested_many_data_key",
-        {"x_field": [{"id": 42}]},
-    )
-    # _, res = app.test_client.post(*post_with_raw_fieldname_args)
-    # assert res.status_code == 422
+    _, res = app.test_client.post("/echo_nested_many_data_key", json={"x_field": [{"id": 42}]})
+    assert res.status_code == 422
 
     _, res = app.test_client.post("/echo_nested_many_data_key", json={"X-Field": [{"id": 24}]})
+    assert res.status_code == 200
     assert res.json == {"x_field": [{"id": 24}]}
 
     _, res = app.test_client.post("/echo_nested_many_data_key", json={})
+    assert res.status_code == 200
     assert res.json == {}
 
 
