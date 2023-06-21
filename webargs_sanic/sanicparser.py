@@ -156,11 +156,7 @@ class SanicParser(AsyncParser):
 
     def load_querystring(self, req, schema):
         """Return query params from the request as a MultiDictProxy."""
-        if req.json is not None:
-            return MultiDictProxy(req.json, schema)
-        if req.args is not None:
-            return MultiDictProxy(req.args, schema)
-        return core.missing
+        return MultiDictProxy(req.args, schema)
 
     def load_form(self, req, schema):
         """Return form values from the request as a MultiDictProxy."""

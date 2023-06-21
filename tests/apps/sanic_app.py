@@ -218,7 +218,7 @@ async def echo_nested_many_with_data_key(request):
 
 
 class EchoMethodViewUseArgs(HTTPMethodView):
-    @use_args({"val": fields.Int()}, location="query")
+    @use_args({"val": fields.Int(required=True)}, location="query")
     async def post(self, request, args):
         return J(args)
 
@@ -227,7 +227,7 @@ app.add_route(EchoMethodViewUseArgs.as_view(), "/echo_method_view_use_args")
 
 
 class EchoMethodViewUseKwargs(HTTPMethodView):
-    @use_kwargs({"val": fields.Int()}, location="query")
+    @use_kwargs({"val": fields.Int(required=False)}, location="query")
     async def post(self, request, val):
         return J({"val": val})
 
