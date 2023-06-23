@@ -36,10 +36,16 @@ def test_use_args_with_view_args_parsing(app):
 
 
 def test_use_args_on_a_method_view(app):
-    _, res = app.test_client.post("/echo_method_view_use_args", json={"val": 42})
+    _, res = app.test_client.post("/echo_method_view_use_args", params={"val": 42})
 
     assert res.status_code == HTTPStatus.OK
     assert res.json == {"val": 42}
+
+
+def test_use_args_on_a_method_view_422(app):
+    _, res = app.test_client.post("/echo_method_view_use_args", json={"val": 42})
+
+    assert res.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
 def test_use_args_on_a_gather_view(app):
@@ -49,7 +55,7 @@ def test_use_args_on_a_gather_view(app):
 
 
 def test_use_kwargs_on_a_method_view(app):
-    _, res = app.test_client.post("/echo_method_view_use_kwargs", json={"val": 42})
+    _, res = app.test_client.post("/echo_method_view_use_kwargs", params={"val": 42})
 
     assert res.status_code == HTTPStatus.OK
     assert res.json == {"val": 42}
