@@ -82,7 +82,8 @@ def abort(http_status_code, exc=None, **kwargs):
 
     err = HandleValidationError(status_code=http_status_code, message=message)
     err.exc = exc or err
-    err.exc.message = message
+    if not isinstance(err.exc, str):
+        err.exc.message = message
     err.data = kwargs
     if kwargs.get('schema'):
         err.schema = kwargs.get('schema')
