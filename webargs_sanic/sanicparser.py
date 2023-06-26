@@ -77,6 +77,8 @@ def abort(http_status_code, exc=None, **kwargs):
     else:
         if exc and hasattr(exc, 'message'):
             message = exc.message
+        elif exc and hasattr(exc, 'messages'):
+            message = exc.messages
         else:
             message = "{'validation_error': 'no message defined'}"
 
