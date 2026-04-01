@@ -1,21 +1,27 @@
-import marshmallow.fields
+from marshmallow import ValidationError, fields
 from validate_email import validate_email
 import phonenumbers
 
 
-class Email(marshmallow.fields.Field):
+class Email(fields.Field):
+    default_error_messages = {
+        "invalid": "Not a valid email address.",
+    }
 
     def __init__(self, *args, **kwargs):
         super(Email, self).__init__(*args, **kwargs)
 
-    def _deserialize(self, value, attr, obj):
+    def _deserialize(self, value, attr, data, **kwargs):
         value = value.strip().lower()
         if not validate_email(value):
-            self.fail('validator_failed')
+            raise ValidationError(self.error_messages["invalid"])
         return value
 
 
-class PhoneNumber(marshmallow.fields.Field):
+class PhoneNumber(fields.Field):
+    default_error_messages = {
+        "invalid": "Not a valid phone number.",
+    }
 
     def __init__(self, *args, **kwargs):
         super(PhoneNumber, self).__init__(*args, **kwargs)
@@ -27,8 +33,8 @@ class PhoneNumber(marshmallow.fields.Field):
                 phone = '+3' + phone
             obj = phonenumbers.parse(phone, None)
             return phonenumbers.is_valid_number(obj)
-        except:
-            pass
+        except Exception:
+            return False
         return False
 
     @classmethod
@@ -38,9 +44,8 @@ class PhoneNumber(marshmallow.fields.Field):
         obj = phonenumbers.parse(phone, None)
         return phonenumbers.format_number(obj, phonenumbers.PhoneNumberFormat.E164)
 
-    def _deserialize(self, value, attr, obj):
+    def _deserialize(self, value, attr, data, **kwargs):
         if not self.phone_validator(value):
-            self.fail('validator_failed')
+            raise ValidationError(self.error_messages["invalid"])
         phone = self.convert_phone(value)
         return phone
-

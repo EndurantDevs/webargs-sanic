@@ -16,7 +16,7 @@ Example: ::
 
     @app.route('/')
     @use_args(hello_args)
-    async def index(args):
+    async def index(request, args):
         return 'Hello ' + args['name']
 """
 import contextlib

@@ -2,7 +2,6 @@ from sanic import Sanic
 from sanic.response import json as J
 from sanic.views import HTTPMethodView
 from sanic import __version__ as sanic_version
-from packaging import version
 
 
 import marshmallow as ma
@@ -27,7 +26,7 @@ strict_kwargs = {}  # {"strict": True} if MARSHMALLOW_VERSION_INFO[0] < 3 else {
 hello_many_schema = HelloSchema(many=True, **strict_kwargs)
 
 app = Sanic(__name__.replace('.', '_'))
-if version.parse(sanic_version) < version.parse("20.0.0"):
+if tuple(int(part) for part in sanic_version.split(".")[:3]) < (20, 0, 0):
     app.config.from_object(TestAppConfig)
 else:
     app.update_config(TestAppConfig)
@@ -79,9 +78,14 @@ async def echo_use_args(request, args):
     return J(args)
 
 
+def validate_value(value):
+    if value <= 42:
+        raise ValidationError("Invalid value.")
+
+
 @app.route("/echo_use_args_validated", methods=["GET", "POST"])
 @use_args(
-    {"value": fields.Int(required=True, validate=lambda value: value > 42)}, location="query"
+    {"value": fields.Int(required=True, validate=validate_value)}, location="query"
 )
 async def echo_use_args_validated(request, args):
     return J(args)

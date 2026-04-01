@@ -17,26 +17,26 @@ async def healthcheck(request):
 
 
 @blueprint.post('/user/')
-@use_args(user_data)
+@use_args(user_data, location="json")
 async def add_user(request, args):
     return response.json({"user_id":storage.insert(args)}, status=201)
 
 
 @blueprint.get('/user/')
-@use_kwargs(user_id)
+@use_kwargs(user_id, location="query")
 async def get_user(request, user_id):
     return response.json(storage.get_or_404(user_id))
 
 
 @blueprint.put('/user/')
-@use_kwargs(user_update)
+@use_kwargs(user_update, location="json")
 async def update_user(request, user_id, user_data):
     storage.update_or_404(user_id, user_data)
     return response.text('', status=204)
 
 
 @blueprint.delete('/user/')
-@use_kwargs(user_id)
-async def get_user(request, user_id):
+@use_kwargs(user_id, location="query")
+async def delete_user(request, user_id):
     storage.delete_or_404(user_id)
     return response.text('', status=204)

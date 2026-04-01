@@ -1,50 +1,62 @@
-import os
 import argparse
-import yaml
-from pathlib import Path
-from dotenv import load_dotenv
 import logging.config
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 from sanic import Sanic
+import yaml
 
-from extentions.exceptions import blueprint as ext_exceptions
+from extentions.exceptions import register_handlers
 from extentions.middlewares import blueprint as ext_middlewares
-
 from app import blueprint as app_blueprint
 
 
-# Command line parser options & setup default values
-parser = argparse.ArgumentParser()
-parser.add_argument('--host', help='Setup host ip to listen up, default to 0.0.0.0', default='0.0.0.0')
-parser.add_argument('--port', help='Setup port to attach, default to 8080', default='8080')
-parser.add_argument('--workers', help='Setup workers to run, default to 1', type=int, default=1)
-parser.add_argument('--debug', help='Enable or disable debugging', action='store_true')
-parser.add_argument('--accesslog', help='Enable or disable access log', action='store_true')
-args = parser.parse_args()
+BASE_DIR = Path(__file__).resolve().parent
+ENV_PATH = BASE_DIR / ".env"
 
-env_path = Path(__file__).absolute().parent / '.env'
-load_dotenv(dotenv_path=env_path)
 
-# Configure Sanic apps
-app = Sanic(__name__, load_env=os.environ.get("ENV_PREFIX", "SANIC_"))
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--host', help='Setup host ip to listen up, default to 0.0.0.0', default='0.0.0.0')
+    parser.add_argument('--port', help='Setup port to attach, default to 8080', type=int, default=8080)
+    parser.add_argument('--workers', help='Setup workers to run, default to 1', type=int, default=1)
+    parser.add_argument('--debug', help='Enable or disable debugging', action='store_true')
+    parser.add_argument('--accesslog', help='Enable or disable access log', action='store_true')
+    return parser.parse_args(argv)
 
-# Config logging system
-with open(app.config['LOG_CFG']) as fobj:
-    logging.config.dictConfig(yaml.safe_load(fobj))
 
-# Install extentions
-app.blueprint(ext_exceptions)
-app.blueprint(ext_middlewares)
+def build_app(app_name="user_simple_storage", env_prefix=None):
+    load_dotenv(dotenv_path=ENV_PATH)
 
-# Install app
-app.blueprint(app_blueprint, url_prefix='/')
+    app = Sanic(app_name, env_prefix=env_prefix or os.environ.get("ENV_PREFIX", "SANIC_"))
 
-# Running sanic, we need to make sure directly run by interpreter
-# ref: http://sanic.readthedocs.io/en/latest/sanic/deploying.html#running-via-command
-if __name__ == '__main__':
+    log_cfg = Path(app.config.get('LOG_CFG', 'logging.yaml'))
+    if not log_cfg.is_absolute():
+        log_cfg = BASE_DIR / log_cfg
+    with log_cfg.open() as fobj:
+        logging.config.dictConfig(yaml.safe_load(fobj))
+
+    register_handlers(app)
+    app.blueprint(ext_middlewares)
+    app.blueprint(app_blueprint, url_prefix='/')
+
+    return app
+
+
+app = build_app()
+
+
+def main(argv=None):
+    args = parse_args(argv)
     app.run(
         host=args.host,
         port=args.port,
         workers=args.workers,
         debug=args.debug,
-        access_log=args.accesslog
+        access_log=args.accesslog,
     )
+
+
+if __name__ == '__main__':
+    main()

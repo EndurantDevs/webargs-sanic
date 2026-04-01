@@ -1,4 +1,4 @@
-from sanic.exceptions import abort
+from sanic.exceptions import NotFound
 from uuid import uuid4
 
 
@@ -16,16 +16,16 @@ class InMemory(object):
         try:
             self.storage.pop(id)
         except KeyError:
-            abort(404)
+            raise NotFound("Resource not found")
 
     def update_or_404(self, id, obj):
         try:
             self.storage[id].update(obj)
         except KeyError:
-            abort(404)
+            raise NotFound("Resource not found")
 
     def get_or_404(self, id):
         try:
             return self.storage[id]
         except KeyError:
-            abort(404)
+            raise NotFound("Resource not found")

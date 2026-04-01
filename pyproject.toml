@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "webargs-sanic"
+dynamic = ["version"]
+description = "webargs-sanic provides integration of webargs with Sanic applications."
+readme = "README.md"
+license = "MIT"
+authors = [
+  { name = "Endurant Devs, Dmytro Nikolayev", email = "info@endurantdev.com" },
+]
+requires-python = ">=3.10"
+dependencies = [
+  "marshmallow>=4.2,<5",
+  "sanic>=25.12,<26",
+  "webargs>=8.7,<9",
+]
+keywords = ["webargs-sanic", "webargs", "sanic", "validation"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Web Environment",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=9,<10",
+  "pytest-cov>=7,<8",
+  "sanic-testing>=24.6,<25",
+]
+dev = [
+  "build>=1.3,<2",
+  "pre-commit>=4.3,<5",
+  "ruff>=0.14,<1",
+  "twine>=6,<7",
+]
+examples = [
+  "phonenumbers>=9,<10",
+  "PyYAML>=6,<7",
+  "python-dotenv>=1.1,<2",
+  "validate_email>=1.3,<2",
+]
+
+[project.urls]
+Homepage = "https://github.com/EndurantDevs/webargs-sanic"
+Repository = "https://github.com/EndurantDevs/webargs-sanic"
+Issues = "https://github.com/EndurantDevs/webargs-sanic/issues"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools]
+packages = ["webargs_sanic"]
+
+[tool.setuptools.dynamic]
+version = { attr = "webargs_sanic.__version__" }
